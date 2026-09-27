@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Kata Tanya</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #ffe6f2, #e5f4ff);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .game {
+        width: 100%;
+        max-width: 600px;
+        background: white;
+        border-radius: 25px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+
+    h1 {
+        color: #e75480;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .question-number {
+        font-weight: bold;
+        color: #777;
+        margin-bottom: 15px;
+    }
+
+    .question {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 20px 0;
+        line-height: 1.5;
+    }
+
+    .answers {
+        display: grid;
+        gap: 12px;
+    }
+
+    button {
+        border: none;
+        border-radius: 15px;
+        padding: 14px;
+        font-size: 18px;
+        cursor: pointer;
+        background: #f3f3f3;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        transform: scale(1.02);
+        background: #ffe0ec;
+    }
+
+    button.correct {
+        background: #9be7a7;
+    }
+
+    button.wrong {
+        background: #ffaaaa;
+    }
+
+    .feedback {
+        margin-top: 18px;
+        font-size: 19px;
+        font-weight: bold;
+        min-height: 28px;
+    }
+
+    .next-btn,
+    .restart-btn {
+        margin-top: 20px;
+        background: #e75480;
+        color: white;
+        font-weight: bold;
+    }
+
+    .next-btn:hover,
+    .restart-btn:hover {
+        background: #d63f6d;
+    }
+
+    .score {
+        font-size: 25px;
+        color: #e75480;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .flower {
+        font-size: 35px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <div id="quiz">
+
+        <div class="flower">🌸🌼🌸</div>
+
+        <h1>Game Kata Tanya</h1><h1>🌸 Game Kata Tanya 🌸</h1>
+
+<div class="subtitle">
+    <b>Bahasa Obot</b><br>
+    Mem Dela<br>
+    Kelas 2 – SD Negeri 71 Maluku Tengah
+</div>
+
+<div class="subtitle">
+    Ayo pilih kata tanya yang tepat! 😊
+</div>
+
+        <div class="subtitle">
+            Ayo pilih kata tanya yang tepat!
+        </div>
+
+        <div class="question-number" id="questionNumber"></div>
+
+        <div class="question" id="question"></div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next-btn hidden" id="nextButton" onclick="nextQuestion()">
+            Soal Berikutnya ➜
+        </button>
+
+    </div>
+
+    <div id="result" class="hidden">
+
+        <div class="flower">🎉🌸🎉</div>
+
+        <h1>Hebat!</h1>
+
+        <div class="score" id="finalScore"></div>
+
+        <p id="message"></p>
+
+        <button class="restart-btn" onclick="restartGame()">
+            🔄 Main Lagi
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+    {
+        question: "_____ nama kamu?",
+        answers: ["Apa", "Siapa", "Kapan", "Mengapa"],
+        correct: "Siapa"
+    },
+
+    {
+        question: "_____ yang kamu makan pagi ini?",
+        answers: ["Apa", "Siapa", "Di mana", "Kapan"],
+        correct: "Apa"
+    },
+
+    {
+        question: "_____ kamu tinggal?",
+        answers: ["Siapa", "Mengapa", "Di mana", "Apa"],
+        correct: "Di mana"
+    },
+
+    {
+        question: "_____ kamu pergi ke sekolah?",
+        answers: ["Bagaimana", "Kapan", "Siapa", "Apa"],
+        correct: "Kapan"
+    },
+
+    {
+        question: "_____ kamu tidak masuk sekolah kemarin?",
+        answers: ["Mengapa", "Apa", "Siapa", "Kapan"],
+        correct: "Mengapa"
+    },
+
+    {
+        question: "_____ cara membuat jus mangga?",
+        answers: ["Siapa", "Bagaimana", "Kapan", "Di mana"],
+        correct: "Bagaimana"
+    },
+
+    {
+        question: "_____ yang sedang membaca buku di perpustakaan?",
+        answers: ["Apa", "Kapan", "Siapa", "Mengapa"],
+        correct: "Siapa"
+    },
+
+    {
+        question: "_____ kamu menyimpan pensilmu?",
+        answers: ["Di mana", "Apa", "Mengapa", "Siapa"],
+        correct: "Di mana"
+    },
+
+    {
+        question: "_____ kamu merasa senang hari ini?",
+        answers: ["Kapan", "Mengapa", "Siapa", "Apa"],
+        correct: "Mengapa"
+    },
+
+    {
+        question: "_____ cara merawat tanaman agar tumbuh subur?",
+        answers: ["Bagaimana", "Siapa", "Kapan", "Apa"],
+        correct: "Bagaimana"
+    }
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+
+function showQuestion() {
+
+    answered = false;
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        "Soal " + (currentQuestion + 1) + " dari " + questions.length;
+
+    document.getElementById("question").textContent = q.question;
+
+    const answersDiv = document.getElementById("answers");
+
+    answersDiv.innerHTML = "";
+
+    document.getElementById("feedback").textContent = "";
+
+    document.getElementById("nextButton").classList.add("hidden");
+
+    q.answers.forEach(answer => {
+
+        const button = document.createElement("button");
+
+        button.textContent = answer;
+
+        button.onclick = () => checkAnswer(button, answer);
+
+        answersDiv.appendChild(button);
+
+    });
+
+}
+
+
+function checkAnswer(button, answer) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const correctAnswer = questions[currentQuestion].correct;
+
+    const buttons = document.querySelectorAll("#answers button");
+
+    buttons.forEach(btn => {
+
+        if (btn.textContent === correctAnswer) {
+            btn.classList.add("correct");
+        }
+
+    });
+
+    if (answer === correctAnswer) {
+
+        score++;
+
+        button.classList.add("correct");
+
+        document.getElementById("feedback").textContent =
+            "✅ Benar! Hebat sekali! 🎉";
+
+    } else {
+
+        button.classList.add("wrong");
+
+        document.getElementById("feedback").textContent =
+            "❌ Belum tepat. Jawaban yang benar: " + correctAnswer;
+
+    }
+
+    document.getElementById("nextButton").classList.remove("hidden");
+
+}
+
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+
+}
+
+
+function showResult() {
+
+    document.getElementById("quiz").classList.add("hidden");
+
+    document.getElementById("result").classList.remove("hidden");
+
+    document.getElementById("finalScore").textContent =
+        "Nilai kamu: " + score + " / " + questions.length;
+
+    let message = "";
+
+    if (score === 10) {
+
+        message = "🌟 Luar biasa! Semua benar!";
+
+    } else if (score >= 8) {
+
+        message = "👏 Hebat! Kamu sudah sangat baik!";
+
+    } else if (score >= 6) {
+
+        message = "😊 Bagus! Terus berlatih ya!";
+
+    } else {
+
+        message = "💪 Jangan menyerah! Ayo belajar lagi!";
+
+    }
+
+    document.getElementById("message").textContent = message;
+
+}
+
+
+function restartGame() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    document.getElementById("quiz").classList.remove("hidden");
+
+    document.getElementById("result").classList.add("hidden");
+
+    showQuestion();
+
+}
+
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
